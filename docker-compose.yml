@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: ./frontend  # Path to the frontend directory
+    container_name: frontend
+    ports:
+      - "3000:3000"  # Expose React app on port 3000
+    volumes:
+      - ./frontend:/app
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend  # Path to the backend directory
+    container_name: backend
+    ports:
+      - "8000:8000"  # Expose FastAPI app on port 8000
+    volumes:
+      - ./backend:/app
+    networks:
+      - app-network
+    depends_on:
+      - db  # If you have a database, make sure it's started first
+
+  db:
+    image: mysql:5.7 # Replace with your preferred database image
+    container_name: db
+    environment:
+      MY_SQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: llm_rag
+      MYSQL_USER: root
+    ports:
+      - "3307:3306"  # Expose PostgreSQL on port 5432
+    # volumes:
+    #   - db_data:/var/lib/postgresql/data
+    # networks:
+    #   - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db_data:
+    driver: local
