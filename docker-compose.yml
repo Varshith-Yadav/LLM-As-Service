@@ -10,7 +10,7 @@ services:
     volumes:
       - ./frontend:/app
     networks:
-      - app-network
+      - llm-net
 
   backend:
     build:
@@ -21,26 +21,26 @@ services:
     volumes:
       - ./backend:/app
     networks:
-      - app-network
+      - llm-net
     depends_on:
       - db  # If you have a database, make sure it's started first
 
   db:
     image: mysql:5.7 # Replace with your preferred database image
-    container_name: db
+    container_name: db_mysql
     environment:
       MY_SQL_ROOT_PASSWORD: rootpass
       MYSQL_DATABASE: llm_rag
       MYSQL_USER: root
     ports:
       - "3307:3306"  # Expose PostgreSQL on port 5432
-    # volumes:
-    #   - db_data:/var/lib/postgresql/data
-    # networks:
-    #   - app-network
+    volumes:
+      - db_data:/var/lib/mysql  # Persist database data
+    networks:
+      - llm-net
 
 networks:
-  app-network:
+  llm-net:
     driver: bridge
 
 volumes:
